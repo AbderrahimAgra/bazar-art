@@ -1,0 +1,19 @@
+{
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["."],
+        "alias": {
+          "@test": "./src/__tests__",
+          "@config": "./src/config",
+          "@routes": "./lib/routes/",
+          "@controllers": "./lib/Controllers",
+          "@middleware": "./lib/middleware",
+          "@auth": "./lib/auth",
+          "@utils": "./src/utils"
+        }
+      }
+    ]
+  ]
+}

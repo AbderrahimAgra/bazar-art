@@ -1,0 +1,1019 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "CraftStore API",
+    "description": "CraftStore API Documentation",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "localhost:3005",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Endpoints for authentication"
+    },
+    {
+      "name": "Categories",
+      "description": "API for managing categories"
+    },
+    {
+      "name": "Customer",
+      "description": "Operations related to customers"
+    },
+    {
+      "name": "Comment",
+      "description": "Operations related to comments."
+    },
+    {
+      "name": "Contact",
+      "description": "Operations related to contacting the CraftStore team."
+    }
+  ],
+  "schemes": ["http"],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Returns a welcome message",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "description": "Logs in a user and returns a JWT token",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Credentials for the user",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "tags": ["Auth"],
+        "description": "Registers a new user and returns a JWT token",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Details of the new user",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "description": "Logs out a user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/auth/user": {
+      "get": {
+        "tags": ["Auth"],
+        "description": "Returns the currently authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/password/reset": {
+      "post": {
+        "tags": ["Auth"],
+        "description": "Sends a password reset email to the provided email address",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Email address to send the password reset link to",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/password/verify": {
+      "post": {
+        "tags": ["Auth"],
+        "description": "Verifies the password reset token and allows the user to set a new password",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Details of the new password",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/all/{take}": {
+      "get": {
+        "tags": ["Categories"],
+        "description": "Returns all categories in the store",
+        "parameters": [
+          {
+            "name": "take",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of categories to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "id": 1,
+                  "name": "Category name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/create": {
+      "post": {
+        "tags": ["Categories"],
+        "description": "Creates a new category",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Category details",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Category name"
+                },
+                "state": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "image": {
+                  "type": "string",
+                  "example": "https://example.com/image.jpg"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Category description"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "description": "Adds a product to the store",
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "qte": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "description": {
+                "type": "string"
+              },
+              "image": {
+                "type": "string"
+              },
+              "sale": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "price": {
+                "type": "number",
+                "format": "float"
+              },
+              "admin_id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "category_id": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "example": {
+              "name": "Product name",
+              "qte": 5,
+              "description": "Product description",
+              "image": "https://example.com/image.jpg",
+              "sale": 0,
+              "price": 9.99,
+              "admin_id": 1,
+              "category_id": 2
+            }
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful response",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "name": {
+                "type": "string"
+              },
+              "qte": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "description": {
+                "type": "string"
+              },
+              "image": {
+                "type": "string"
+              },
+              "sale": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "price": {
+                "type": "number",
+                "format": "float"
+              },
+              "admin_id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "category_id": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "example": {
+              "id": 1,
+              "name": "Product name",
+              "qte": 5,
+              "description": "Product description",
+              "image": "https://example.com/image.jpg",
+              "sale": 0,
+              "price": 9.99,
+              "admin_id": 1,
+              "category_id": 2
+            }
+          }
+        }
+      }
+    },
+    "/customer/product": {
+      "post": {
+        "tags": ["Customer"],
+        "description": "Adds a new product to the store",
+        "parameters": [
+          {
+            "name": "product",
+            "in": "body",
+            "description": "Product object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Product Name"
+                },
+                "qte": {
+                  "type": "number",
+                  "example": 10
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Product Description"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "Product Image URL"
+                },
+                "sale": {
+                  "type": "number",
+                  "example": 20.5
+                },
+                "price": {
+                  "type": "number",
+                  "example": 25.5
+                },
+                "admin_id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "category_id": {
+                  "type": "number",
+                  "example": 2
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with product object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Product Name"
+                },
+                "qte": {
+                  "type": "number",
+                  "example": 10
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Product Description"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "Product Image URL"
+                },
+                "sale": {
+                  "type": "number",
+                  "example": 20.5
+                },
+                "price": {
+                  "type": "number",
+                  "example": 25.5
+                },
+                "admin_id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "category_id": {
+                  "type": "number",
+                  "example": 2
+                },
+                "createdAt": {
+                  "type": "string",
+                  "example": "2023-04-09T12:00:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customer/product/all/{take}": {
+      "get": {
+        "tags": ["Customer"],
+        "description": "Returns all products in the store",
+        "parameters": [
+          {
+            "name": "take",
+            "in": "path",
+            "description": "The number of products to retrieve",
+            "required": true,
+            "type": "number",
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with array of product objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Product Name"
+                  },
+                  "qte": {
+                    "type": "number",
+                    "example": 10
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Product Description"
+                  },
+                  "image": {
+                    "type": "string",
+                    "example": "Product Image URL"
+                  },
+                  "sale": {
+                    "type": "number",
+                    "example": 20.5
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 25.5
+                  },
+                  "admin_id": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "category_id": {
+                    "type": "number",
+                    "example": 2
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "example": "2023-04-09T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customer/product/{id}": {
+      "get": {
+        "tags": ["Customer"],
+        "description": "Returns a single product from the store",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of product to return",
+            "required": true,
+            "type": "number",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with product object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Product Name"
+                },
+                "qte": {
+                  "type": "number",
+                  "example": 10
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Product Description"
+                },
+                "image": {
+                  "type": "string",
+                  "example": "Product Image URL"
+                },
+                "sale": {
+                  "type": "number",
+                  "example": 20.5
+                },
+                "price": {
+                  "type": "number",
+                  "example": 25.5
+                },
+                "admin_id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "category_id": {
+                  "type": "number",
+                  "example": 2
+                },
+                "createdAt": {
+                  "type": "string",
+                  "example": "2023-04-09T12:00:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customer/product/category/{id}": {
+      "get": {
+        "tags": ["Customer"],
+        "description": "Returns all products in a specific category from the store",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the category to return products from",
+            "required": true,
+            "type": "number",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with array of product objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Product Name"
+                  },
+                  "qte": {
+                    "type": "number",
+                    "example": 10
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Product Description"
+                  },
+                  "image": {
+                    "type": "string",
+                    "example": "Product Image URL"
+                  },
+                  "sale": {
+                    "type": "number",
+                    "example": 20.5
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 25.5
+                  },
+                  "admin_id": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "category_id": {
+                    "type": "number",
+                    "example": 2
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "example": "2023-04-09T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customer/product/{id}": {
+      "delete": {
+        "tags": ["Customer"],
+        "description": "Deletes a product from the store",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the product to delete",
+            "required": true,
+            "type": "number",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with a success message",
+            "schema": {
+              "type": "string",
+              "example": "Your product has been removed successfully"
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "schema": {
+              "type": "string",
+              "example": "no product found!"
+            }
+          }
+        }
+      }
+    },
+    "/user/comment/{id}": {
+      "get": {
+        "summary": "Get all comments for a product",
+        "description": "Returns all comments for the specified product.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the product.",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Comment"
+              }
+            }
+          }
+        },
+        "tags": ["Comment"]
+      }
+    },
+    "/user/comment": {
+      "put": {
+        "summary": "Edit a comment",
+        "description": "Edit an existing comment.",
+        "parameters": [
+          {
+            "name": "comment",
+            "in": "body",
+            "description": "The comment to edit.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CommentEdit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          }
+        },
+        "tags": ["Comment"]
+      },
+      "post": {
+        "summary": "Add a comment",
+        "description": "Add a new comment.",
+        "parameters": [
+          {
+            "name": "comment",
+            "in": "body",
+            "description": "The comment to add.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CommentAdd"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          }
+        },
+        "tags": ["Comment"]
+      }
+    },
+    "/user/contact": {
+      "post": {
+        "summary": "Contact CraftStore",
+        "description": "Send a message to the CraftStore team.",
+        "parameters": [
+          {
+            "name": "contact",
+            "in": "body",
+            "description": "The message to send to the CraftStore team.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Contact"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "tags": ["Contact"]
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      }
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The unique identifier for the comment."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the commenter."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email of the commenter."
+        },
+        "comment": {
+          "type": "string",
+          "description": "The comment."
+        },
+        "usersId": {
+          "type": "integer",
+          "description": "The ID of the user who posted the comment."
+        },
+        "products_id": {
+          "type": "integer",
+          "description": "The ID of the product the comment was posted on."
+        }
+      }
+    },
+    "Contact": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the person sending the message."
+        },
+        "subject": {
+          "type": "string",
+          "description": "The subject of the message."
+        },
+        "message": {
+          "type": "string",
+          "description": "The body of the message."
+        }
+      }
+    },
+    "CommentEdit": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The ID of the comment to edit."
+        },
+        "comment": {
+          "type": "string",
+          "description": "The edited comment."
+        }
+      }
+    }
+  }
+}

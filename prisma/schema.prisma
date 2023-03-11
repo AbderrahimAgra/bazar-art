@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model admin {
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(45)
+  email      String     @db.VarChar(45)
+  password   String     @db.Text
+  created_at DateTime?  @default(now())
+  updated_at DateTime?  @default(now())
+  products   products[]
+}
+
+model comments {
+  id          Int       @default(autoincrement())
+  name        String    @db.VarChar(45)
+  email       String    @db.VarChar(45)
+  comment     String    @db.Text
+  products_id Int
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @default(now())
+  products    products  @relation(fields: [products_id], references: [id])
+  users       users     @relation(fields: [usersId], references: [id])
+  usersId     Int
+
+  @@id([id, products_id])
+  @@index([products_id], name: "fk_comments_products1_idx")
+}
+
+model category {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(45)
+  state       Boolean    @default(false)
+  description String     @db.Text
+  image       String     @db.LongText
+  created_at  DateTime?  @default(now())
+  updated_at  DateTime?  @default(now())
+  products    products[]
+}
+
+model order {
+  id                 Int                  @default(autoincrement()) @unique
+  code               String               @default(uuid())
+  total_price        String               @db.VarChar(11)
+  state              String               @default("") @db.VarChar(11)
+  users_id           Int                  @default(0)
+  created_at         DateTime?            @default(now())
+  users              users                @relation(fields: [users_id], references: [id])
+  products_has_order products_has_order[]
+
+  @@id([id, users_id])
+  @@index([users_id], name: "fk_order_users_idx")
+}
+
+model products {
+  id                 Int                  @default(autoincrement()) @unique
+  name               String               @db.VarChar(70)
+  qte                Int
+  description        String               @db.LongText
+  image              String               @db.LongText
+  sale               Boolean              @default(false)
+  price              String               @db.VarChar(7)
+  admin_id           Int
+  category_id        Int
+  created_at         DateTime?            @default(now())
+  updated_at         DateTime?            @default(now())
+  admin              admin                @relation(fields: [admin_id], references: [id])
+  category           category             @relation(fields: [category_id], references: [id])
+  comments           comments[]
+  products_has_order products_has_order[]
+
+  @@id([id, admin_id, category_id])
+  @@index([admin_id], name: "fk_products_admin1_idx")
+  @@index([category_id], name: "fk_products_category1_idx")
+}
+
+model users {
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(45)
+  email      String     @db.VarChar(45)
+  password   String     @db.Text
+  role       String     @default("User")
+  phone      String?    @db.VarChar(45)
+  created_at DateTime?  @default(now())
+  updated_at DateTime?  @default(now())
+  order      order[]
+  comments   comments[]
+}
+
+model products_has_order {
+  products_id Int
+  order_id    Int
+  qte         Int
+  order       order    @relation(fields: [order_id], references: [id])
+  products    products @relation(fields: [products_id], references: [id])
+
+  @@id([products_id, order_id])
+  @@index([order_id], name: "fk_products_has_order_order1_idx")
+  @@index([products_id], name: "fk_products_has_order_products1_idx")
+}

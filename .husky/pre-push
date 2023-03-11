@@ -1,0 +1,18 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+set -e
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+allBranch="$(git branch -a)"
+
+_user="$(id -u -n)"
+
+if [[ "$branch" = "master"]]; then
+    echo "$_user You can't push directly to master branch"
+    echo "Try to push somewhere else you piece of sh*t 🙂"
+    echo "This is list of all branches->  $allBranch"
+    exit 0
+fi
+
+echo '✅✅✅✅ everything looks good pushing your sh*t now. ✅✅✅✅'
